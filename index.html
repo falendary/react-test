@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Sci-Fi</title>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <script src="https://fb.me/react-0.14.3.js"></script>
+    <script src="https://fb.me/react-dom-0.14.3.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <h1>Задание №4</h1>
+    <div class="row">
+        <div class="col-md-6">
+            <p>Это страница создания персонажа в онлайн-игрушке по мотивам научной фантастики начала XX века (игрушка воображаемая, мы её придумали специально для этого задания). Нужно сделать <strong>компонент на React.js для выбора параметров персонажа:</strong> планеты, расы и пола.</p>
+            <ul>
+                <li>планет всего три: «Земля», «Марс» и «Венера»;</li>
+                <li>рас три: люди, марсиане и венерианцы. Марсиане могут быть только с Марса, венерианцы только с Венеры, а люди могут с любой из трёх планет;</li>
+                <li>полов у людей два, у венерианцев — три (кроме мужского и женского есть средний), у марсиан пол вообще один (мужской).</li>
+            </ul>
+            <p>При создании компонента рекомендуется придерживаться здравого смысла и минимализма.</p>
+        </div>
+        <div class="col-md-6">
+            <form>
+                <div class="form-group">
+                    <label for="name">Имя</label>
+                    <input class="form-control" name="name" id="name">
+                </div>
+                <div id="container"></div>
+                <input type="submit" class="btn btn-primary" value="Создать персонажа">
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/babel">
+    var Selector = React.createClass({
+     getInitialState: function() {
+     	console.log(this);
+        return {
+            planet: this.props.planet,
+            race: this.props.race,
+            gender: this.props.gender,
+            planets: [
+            	  { label: 'Марс', value: 'mars' },
+            	  { label: 'Венера', value: 'venus' },
+            	  { label: 'Земля', value: 'earth' }
+            ],
+            genders: [
+               { label: 'Мужской', value: 'man' },
+            	  { label: 'Женский', value: 'woman' },
+            	  { label: 'Средний', value: 'neuter' }
+            ],
+            races: [
+               { label: 'Землянин', value: 'human', homePlanet: 'earth', genders: ['man', 'woman']},
+            	  { label: 'Марсианин', value: 'martian', homePlanet: 'mars' , genders: ['man']},
+            	  { label: 'Венерианец ', value: 'venusian', homePlanet:  'venus', genders: ['man', 'woman', 'neuter']}
+            ]
+         }
+      },
+      handleChange: function (name, e) {
+      	var state = {};
+      	state = this.state;
+      	if (name === 'planets') {
+      		state.planet  = e.target.value
+      	} else {
+      		if (name === 'races') {
+			state.race  = e.target.value
+      		} else {
+      			if (name === 'genders') {
+				state.gender  = e.target.value
+      			}
+      		}
+      	}
+      	console.log('test', name, e, state);
+      	this.setState(state);
+      },
+      selectParams: function(name) {
+      	var default_value = ''
+      	var that = this;
+	if (name ==='races') {
+		default_value = that.state.race
+	} else {
+		if (name === 'genders') {
+		default_value = that.state.gender	
+		} else {
+			default_value = that.state.planet
+		}
+	}
+	
+             var options = this.state[name].filter(function(item) {
+             	switch(name) {
+             		case 'races':
+             			if (that.state.planet === item.homePlanet || item.homePlanet === 'earth') {
+             				return item
+             			}
+             		break;
+             		case 'genders':
+             			var i ;
+             			for (i = 0; i < that.state.races.length; i = i + 1) {
+             				if (that.state.races[i].genders.indexOf(that.state.gender) > -1) {
+             					return item;
+             				}
+             			}
+             		break;
+             		default: 
+             			return item;
+             	}
+             }).map(function(elem, i) {
+	            if (elem.selected == true) default_value = elem.value;
+	            return <option value={elem.value} key={i}>{elem.label}</option>
+             }, this);
+             return <select name={name} className="form-control" value={default_value} onChange={this.handleChange.bind(this, name)}>{options}</select>
+      },
+      render: function() {
+        return (
+        	<div>
+        		<div className="form-group">
+	            	       <label for="planet">Планета</label>
+	            	       {this.selectParams('planets')}
+	            </div>
+	            <div className="form-group">
+	                    <label for="race">Раса</label>
+	                    {this.selectParams('races')}
+	            </div>
+	            <div className="form-group">
+	            	       <label for="gender">Пол</label>
+	                    {this.selectParams('genders')}
+	            </div>    
+            </div>
+        );
+      }
+    });
+
+
+    ReactDOM.render(
+        <Selector gender="man" planet="mars" race="human"/> ,
+        document.getElementById('container')
+    );
+</script>
+</body>
+</html>
