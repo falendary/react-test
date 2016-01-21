@@ -84,7 +84,7 @@
 		if (name === 'genders') {
 		default_value = that.state.gender	
 		} else {
-			default_value = that.state.planet
+			default_value = that.state.planet 	
 		}
 	}
 	
@@ -96,11 +96,18 @@
              			}
              		break;
              		case 'genders':
-             			var i ;
+             			var i , x;
              			for (i = 0; i < that.state.races.length; i = i + 1) {
-             				if (that.state.races[i].genders.indexOf(that.state.gender) > -1) {
-             					return item;
+         					for (x = 0; x < that.state.genders.length; x = x + 1) {
+         						if (that.state.races[i].value === that.state.race) {
+		             				if (that.state.races[i].genders.indexOf(item.value) > -1) {
+		             					console.log('that.state.races[i].genders', that.state.races[i].genders);
+		             					console.log('item', item);
+		             					return item;
+		             				}
+	             				}
              				}
+             			
              			}
              		break;
              		default: 
